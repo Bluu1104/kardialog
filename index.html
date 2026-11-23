@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KardiaLog — Rekam Medis & Pendamping ACS</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="./css/tokens.css" />
+  <link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar Desktop -->
+    <aside class="sidebar" aria-label="Navigasi Utama">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9">
+            <path d="M3 12h4l2.5-6 4 12 2.5-6H21" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+        <div>
+          <span class="brand-name">KardiaLog</span>
+          <span class="brand-sub">Rekam Medis ACS</span>
+        </div>
+      </div>
+
+      <nav class="nav-list" aria-label="Menu Utama">
+        <button class="nav-item is-active" data-view="overview" aria-current="page" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          <span>Ringkasan</span>
+        </button>
+        <button class="nav-item" data-view="medications" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10.5 20.5 19 12a4.95 4.95 0 1 0-7-7l-8.5 8.5a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+          <span>Pengingat Obat</span>
+        </button>
+        <button class="nav-item" data-view="vitals" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          <span>Pemantauan Kesehatan</span>
+        </button>
+        <button class="nav-item" data-view="education" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+          <span>Edukasi ACS</span>
+        </button>
+        <button class="nav-item" data-view="lifestyle" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21c-4.5-3.2-8-6.5-8-10.5A4.5 4.5 0 0 1 12 7.4a4.5 4.5 0 0 1 8 3.1c0 4-3.5 7.3-8 10.5Z"/></svg>
+          <span>Pola Hidup Sehat</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="emergency-card">
+          <div class="emergency-head">
+            <span class="pulse-dot" aria-hidden="true"></span>
+            <span>Darurat Nyeri Dada</span>
+          </div>
+          <p>Nyeri dada &gt;15 menit, menjalar ke lengan/rahang, atau sesak berat: segera ke IGD atau hubungi <strong>119</strong>.</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main-area">
+      <!-- Top Bar -->
+      <header class="topbar">
+        <div>
+          <p class="eyebrow" id="currentDateLabel">—</p>
+          <h1 class="page-title" id="pageTitle">Ringkasan Klinis</h1>
+        </div>
+        <div class="topbar-actions">
+          <div class="clock-pill" id="liveClock" aria-label="Waktu saat ini">--:--:--</div>
+          <button class="btn btn-subtle" id="notifPermissionBtn" type="button">
+            Aktifkan Notifikasi
+          </button>
+        </div>
+      </header>
+
+      <!-- Active Medication Alarm Banner -->
+      <div class="alarm-banner" id="alarmBanner" hidden role="alert">
+        <div class="alarm-content">
+          <span class="alarm-badge">WAKTU MINUM OBAT</span>
+          <strong id="alarmText">—</strong>
+        </div>
+        <div class="alarm-actions">
+          <button class="btn btn-accent btn-sm" id="alarmMarkTakenBtn" type="button">Tandai Sudah Diminum</button>
+          <button class="btn btn-ghost btn-sm" id="alarmDismissBtn" type="button">Tutup</button>
+        </div>
+      </div>
+
+      <!-- VIEW 1: RINGKASAN -->
+      <section class="view is-active" id="view-overview">
+        <div class="summary-strip" id="overviewSummaryStrip"></div>
+
+        <div class="asymmetric-grid">
+          <article class="panel">
+            <header class="panel-header">
+              <div>
+                <h2>Jadwal Obat Hari Ini</h2>
+                <p class="muted">Klik status untuk mencatat kepatuhan dosis harian.</p>
+              </div>
+              <button class="link-btn" data-goto="medications" type="button">Kelola Resep &rarr;</button>
+            </header>
+            <div id="overviewMedTimeline" class="mar-list"></div>
+          </article>
+
+          <div class="stack-col">
+            <article class="panel">
+              <header class="panel-header">
+                <div>
+                  <h2>Tanda Vital Terakhir</h2>
+                  <p class="muted" id="overviewVitalTime">Belum ada catatan</p>
+                </div>
+                <button class="link-btn" data-goto="vitals" type="button">Catat Baru &rarr;</button>
+              </header>
+              <div id="overviewVitalCard"></div>
+            </article>
+
+            <article class="panel">
+              <header class="panel-header">
+                <div>
+                  <h2>Target Harian Jantung Sehat</h2>
+                  <p class="muted">Kebiasaan protektif hari ini</p>
+                </div>
+                <button class="link-btn" data-goto="lifestyle" type="button">Buka Panduan &rarr;</button>
+              </header>
+              <div id="overviewHabitPreview"></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 2: PENGINGAT OBAT -->
+      <section class="view" id="view-medications">
+        <div class="asymmetric-grid">
+          <article class="panel">
+            <header class="panel-header">
+              <div>
+                <h2>Daftar Resep &amp; Jadwal Harian</h2>
+                <p class="muted">Pengingat otomatis memeriksa jadwal setiap 15 detik saat halaman terbuka.</p>
+              </div>
+              <button class="btn btn-subtle btn-sm" id="testNotifBtn" type="button">Uji Notifikasi</button>
+            </header>
+            <div id="medScheduleList" class="mar-list"></div>
+          </article>
+
+          <article class="panel">
+            <header class="panel-header">
+              <div>
+                <h2>Tambah Obat Baru</h2>
+                <p class="muted">Sesuaikan persis dengan instruksi dokter/apoteker.</p>
+              </div>
+            </header>
+            <form id="medForm" class="clinical-form">
+              <div class="field">
+                <label for="medName">Nama Obat</label>
+                <input id="medName" name="name" type="text" placeholder="cth. Aspirin / Clopidogrel / Atorvastatin" required />
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="medDose">Dosis</label>
+                  <input id="medDose" name="dose" type="text" placeholder="cth. 80 mg (1 tablet)" required />
+                </div>
+                <div class="field">
+                  <label for="medTime">Jam Minum</label>
+                  <input id="medTime" name="time" type="time" required />
+                </div>
+              </div>
+              <div class="field">
+                <label for="medNote">Aturan Pakai (Opsional)</label>
+                <input id="medNote" name="note" type="text" placeholder="cth. Sesudah makan pagi" />
+              </div>
+              <button class="btn btn-primary" type="submit">Simpan ke Jadwal</button>
+            </form>
+          </article>
+        </div>
+
+        <article class="panel mt-24">
+          <header class="panel-header">
+            <div>
+              <h2>Riwayat Kepatuhan Minum Obat</h2>
+              <p class="muted">Catatan konsumsi obat untuk evaluasi saat kontrol rutin.</p>
+            </div>
+            <div class="filter-group">
+              <select id="medHistoryFilter" aria-label="Filter riwayat obat">
+                <option value="all">Semua Status</option>
+                <option value="taken">Sudah Diminum</option>
+                <option value="missed">Belum / Terlewat</option>
+              </select>
+            </div>
+          </header>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Jadwal</th>
+                  <th>Obat &amp; Dosis</th>
+                  <th>Status</th>
+                  <th>Waktu Catat</th>
+                </tr>
+              </thead>
+              <tbody id="medHistoryBody"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <!-- VIEW 3: PEMANTAUAN KESEHATAN -->
+      <section class="view" id="view-vitals">
+        <div class="vitals-grid">
+          <article class="panel">
+            <header class="panel-header">
+              <div>
+                <h2>Catat Pemeriksaan</h2>
+                <p class="muted">Masukkan hasil pengukuran mandiri.</p>
+              </div>
+            </header>
+            <form id="vitalForm" class="clinical-form">
+              <div class="field-row">
+                <div class="field">
+                  <label for="vitalSys">Sistolik (mmHg)</label>
+                  <input id="vitalSys" name="systolic" type="number" min="60" max="260" placeholder="120" required />
+                </div>
+                <div class="field">
+                  <label for="vitalDia">Diastolik (mmHg)</label>
+                  <input id="vitalDia" name="diastolic" type="number" min="40" max="160" placeholder="80" required />
+                </div>
+              </div>
+              <div class="bp-preview" id="bpLivePreview">Masukkan tekanan darah untuk melihat klasifikasi klinis.</div>
+              <div class="field-row">
+                <div class="field">
+                  <label for="vitalPulse">Denyut Nadi (bpm)</label>
+                  <input id="vitalPulse" name="pulse" type="number" min="35" max="220" placeholder="72" required />
+                </div>
+                <div class="field">
+                  <label for="vitalWeight">Berat Badan (kg)</label>
+                  <input id="vitalWeight" name="weight" type="number" step="0.1" min="25" max="250" placeholder="68.5" required />
+                </div>
+              </div>
+              <div class="field">
+                <label for="vitalDateTime">Tanggal &amp; Waktu Pemeriksaan</label>
+                <input id="vitalDateTime" name="recordedAt" type="datetime-local" required />
+              </div>
+              <div class="field">
+                <label for="vitalSymptoms">Keluhan yang Dirasakan</label>
+                <textarea id="vitalSymptoms" name="symptoms" rows="3" placeholder="cth. Tidak ada keluhan, atau nyeri dada ringan saat naik tangga..."></textarea>
+              </div>
+              <button class="btn btn-primary" type="submit">Simpan Catatan Vital</button>
+            </form>
+          </article>
+
+          <div class="stack-col">
+            <article class="panel">
+              <header class="panel-header">
+                <div>
+                  <h2>Tren Tekanan Darah &amp; Nadi</h2>
+                  <p class="muted">10 pemeriksaan terakhir</p>
+                </div>
+                <div class="chart-legend">
+                  <span><i class="dot dot-sys"></i>Sistolik</span>
+                  <span><i class="dot dot-dia"></i>Diastolik</span>
+                  <span><i class="dot dot-hr"></i>Nadi</span>
+                </div>
+              </header>
+              <div id="vitalsChartContainer" class="chart-box"></div>
+            </article>
+
+            <article class="panel">
+              <header class="panel-header">
+                <div>
+                  <h2>Log Pemeriksaan</h2>
+                  <p class="muted" id="vitalsExportStatus">Siap diekspor untuk laporan dokter</p>
+                </div>
+                <button class="btn btn-subtle btn-sm" id="exportCsvBtn" type="button">Ekspor CSV</button>
+              </header>
+              <div class="table-wrap">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Waktu</th>
+                      <th>Tekanan Darah</th>
+                      <th>Nadi</th>
+                      <th>Berat</th>
+                      <th>Keluhan</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="vitalsTableBody"></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 4: EDUKASI ACS -->
+      <section class="view" id="view-education">
+        <div class="editorial-layout">
+          <aside class="chapter-index" aria-label="Daftar Materi ACS">
+            <p class="index-label">Daftar Materi Klinis</p>
+            <div id="acsChapterList" class="chapter-list"></div>
+          </aside>
+          <article class="panel monograph" id="acsArticleBody"></article>
+        </div>
+      </section>
+
+      <!-- VIEW 5: POLA HIDUP SEHAT -->
+      <section class="view" id="view-lifestyle">
+        <div class="asymmetric-grid">
+          <article class="panel">
+            <header class="panel-header">
+              <div>
+                <h2>Checklist Pola Hidup Hari Ini</h2>
+                <p class="muted">Tersimpan otomatis untuk memantau konsistensi harian.</p>
+              </div>
+              <span class="mono-badge" id="habitScoreBadge">0/5</span>
+            </header>
+            <div id="habitChecklist" class="habit-list"></div>
+          </article>
+
+          <article class="panel">
+            <header class="panel-header">
+              <div>
+                <h2>Latihan Relaksasi Pernapasan 4–4–6</h2>
+                <p class="muted">Membantu menurunkan respon stres simpatis &amp; menenangkan denyut jantung.</p>
+              </div>
+            </header>
+            <div class="breath-widget">
+              <div class="breath-ring" id="breathRing">
+                <span class="breath-phase" id="breathPhase">Siap</span>
+                <span class="breath-count" id="breathCount">4-4-6</span>
+              </div>
+              <p class="muted center-text" id="breathHint">Tarik 4 detik &bull; Tahan 4 detik &bull; Hembuskan perlahan 6 detik</p>
+              <button class="btn btn-primary" id="breathToggleBtn" type="button">Mulai Sesi</button>
+            </div>
+          </article>
+        </div>
+
+        <article class="panel mt-24">
+          <header class="panel-header">
+            <div>
+              <h2>Panduan 5 Pilar Jantung Sehat</h2>
+              <p class="muted">Adaptasi praktis untuk keseharian pasien pasca-ACS.</p>
+            </div>
+          </header>
+          <div class="pillar-tabs" id="lifestyleTabs" role="tablist" aria-label="5 Pilar Pola Hidup Sehat"></div>
+          <div class="pillar-body" id="lifestyleContent" role="tabpanel"></div>
+        </article>
+      </section>
+    </main>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-nav" aria-label="Navigasi Mobile">
+      <button class="mobile-nav-item is-active" data-view="overview" aria-current="page" type="button">Ringkasan</button>
+      <button class="mobile-nav-item" data-view="medications" type="button">Obat</button>
+      <button class="mobile-nav-item" data-view="vitals" type="button">Vital</button>
+      <button class="mobile-nav-item" data-view="education" type="button">ACS</button>
+      <button class="mobile-nav-item" data-view="lifestyle" type="button">Gaya Hidup</button>
+    </nav>
+  </div>
+
+  <!-- Toast Host -->
+  <div class="toast-host" id="toastHost" aria-live="polite"></div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

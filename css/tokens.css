@@ -1,0 +1,39 @@
+:root {
+  /* Surface & Canvas — Warm Clinical Paper */
+  --bg-canvas: #f7f6f2;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f1efe9;
+  --bg-hover: #ebe8e0;
+
+  /* Borders */
+  --border-hairline: #e3e1da;
+  --border-strong: #cfccc2;
+
+  /* Typography */
+  --text-primary: #18181b;
+  --text-secondary: #575651;
+  --text-muted: #7c7a72;
+
+  /* Clinical Semantic Accents */
+  --accent-primary: #0f766e;       /* Clinical Teal */
+  --accent-primary-soft: #e6f4f1;
+  --accent-danger: #b91c1c;        /* Cardiac Crimson */
+  --accent-danger-soft: #fef2f2;
+  --accent-warning: #b45309;       /* Amber Caution */
+  --accent-warning-soft: #fffbeb;
+
+  /* Fonts */
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Geometry */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  /* Elevation (minimalis & terkendali) */
+  --shadow-xs: 0 1px 2px rgba(24, 24, 27, 0.04);
+
+  /* Layout */
+  --sidebar-w: 248px;
+}
