@@ -1,0 +1,28 @@
+Sistem Operasi
+
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+Editor / IDE
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+Vercel Local
+
+.vercel
+
+Environment & Rahasia (jika nanti pakai API/backend)
+
+.env
+.env.local
+.env.*.local
+
+Log & Dependensi (jika nanti pakai npm/tool lokal)
+
+node_modules/
+.log
+npm-debug.log
